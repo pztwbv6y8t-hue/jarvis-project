@@ -253,6 +253,19 @@
   let engine;
   const systemPrompt = "あなたはJARVISという執事AIです。丁寧に、簡潔に答えてください。";
 
+  // 会話履歴を保存する関数
+  function saveChatHistory() {
+    localStorage.setItem('jarvis_chat', chatBox.innerHTML);
+  }
+
+  // 会話履歴を復元する関数
+  function loadChatHistory() {
+    const savedChat = localStorage.getItem('jarvis_chat');
+    if (savedChat) {
+      chatBox.innerHTML = savedChat;
+    }
+  }
+
   // 音声読み上げ関数
   function speak(text) {
     const utterance = new SpeechSynthesisUtterance(text);
@@ -336,6 +349,7 @@
       jarvisMessage.textContent = replyText;
       chatBox.appendChild(jarvisMessage);
       
+      saveChatHistory(); // JARVISの返答後に記憶を保存
       speak(replyText);
     } catch (e) {
       alert('AI応答エラー: ' + e.message);
@@ -358,6 +372,7 @@
     userMessage.textContent = spokenText;
     chatBox.appendChild(userMessage);
     
+    saveChatHistory(); // ユーザーの発言後に記憶を保存
     askAI(spokenText);
   });
 
@@ -365,11 +380,10 @@
     stopVisualizer();
   });
 
-  // 起動時にAIを読み込む
+  // 起動時の処理
+  loadChatHistory(); // 保存された会話を読み込む
   loadAI();
 </script>
-
-
 
 </body>
 </html>
