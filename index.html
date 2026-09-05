@@ -180,6 +180,10 @@
 <script>
   const talkButton = document.querySelector('.talk-button');
 
+  speechSynthesis.onvoiceschanged = function() {
+    console.log('声の準備ができました');
+  };
+
   talkButton.addEventListener('click', function() {
     const voices = speechSynthesis.getVoices();
     let voiceList = '';
@@ -188,8 +192,9 @@
         voiceList += index + ': ' + voice.name + '\n';
       }
     });
-    alert(voiceList);
+    alert(voiceList || '日本語の声が見つかりませんでした');
   });
 </script>
+
 </body>
 </html>
