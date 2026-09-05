@@ -120,7 +120,7 @@
   position: fixed;
   top: 20px;
   right: 20px;
-  font-size: 24px;
+  font-size: 36px;
   z-index: 1000;
 }
 .settings-panel {
@@ -138,6 +138,17 @@
   transition: transform 0.3s ease-in-out;
   z-index: 998;
 }
+clearHistoryButton {
+  margin-top: 20px;
+  padding: 12px 20px;
+  background-color: transparent;
+  border: 1px solid #ffffff;
+  border-radius: 20px;
+  color: #ffffff;
+  font-size: 14px;
+  letter-spacing: 1px;
+  width: 100%;
+}
 #settingsToggle:checked ~ .settings-panel {
   transform: translateX(0);
 }
@@ -148,7 +159,7 @@
 <body>
   <input type="checkbox" id="settingsToggle">
 <label for="settingsToggle" class="settings-button">
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.5">
+  <svg width="39" height="39" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.5">
     <circle cx="12" cy="12" r="3"/>
     <path d="M12 2v3M12 19v3M22 12h-3M5 12H2M19.07 4.93l-2.12 2.12M7.05 16.95l-2.12 2.12M19.07 19.07l-2.12-2.12M7.05 7.05L4.93 4.93" stroke-linecap="round"/>
   </svg>
