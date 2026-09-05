@@ -179,13 +179,37 @@
 </div>
 <script>
   const talkButton = document.querySelector('.talk-button');
+  const chatBox = document.querySelector('.chat-box');
 
-  talkButton.addEventListener('click', function() {
-    const utterance = new SpeechSynthesisUtterance('おかえりなさい、HAL。何かお手伝いしましょうか?');
+  // 読み上げ機能(すでにある部分)
+  function speak(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'ja-JP';
     speechSynthesis.speak(utterance);
+  }
+
+  // 音声認識の準備
+  const recognition = new webkitSpeechRecognition();
+  recognition.lang = 'ja-JP';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  // TALKボタンを押したら、認識を開始する
+  talkButton.addEventListener('click', function() {
+    recognition.start();
+  });
+
+  // 話した内容が認識できたときの処理
+  recognition.addEventListener('result', function(event) {
+    const spokenText = event.results[0][0].transcript;
+
+    const userMessage = document.createElement('div');
+    userMessage.className = 'message user';
+    userMessage.textContent = spokenText;
+    chatBox.appendChild(userMessage);
   });
 </script>
+
 
 
 </body>
