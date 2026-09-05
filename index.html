@@ -63,6 +63,8 @@
   max-width: 400px;
   margin: 40px auto 0;
   text-align: left;
+  max-height: 300;
+  overflow-y: auto;
 }
 .message {
   padding: 10px 16px;
@@ -284,6 +286,7 @@
       jarvisMessage.textContent = replyText;
       chatBox.appendChild(jarvisMessage);
       
+      
       saveChatHistory(); // JARVISの返答後に記憶を保存
       speak(replyText);
     } catch (e) {
@@ -306,6 +309,7 @@
     userMessage.className = 'message user';
     userMessage.textContent = spokenText;
     chatBox.appendChild(userMessage);
+    chatBox.scrollTop = chatBox.scrollHeight;
     
     saveChatHistory(); // ユーザーの発言後に記憶を保存
     askAI(spokenText);
