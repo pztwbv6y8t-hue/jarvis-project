@@ -177,6 +177,15 @@
   <h3>設定</h3>
   <p>ここに今後、設定項目が追加されます。</p>
 </div>
+<script>
+  const talkButton = document.querySelector('.talk-button');
+
+  talkButton.addEventListener('click', function() {
+    const utterance = new SpeechSynthesisUtterance('おかえりなさい、HAL。何かお手伝いしましょうか?');
+    utterance.lang = 'ja-JP';
+    speechSynthesis.speak(utterance);
+  });
+</script>
 
 </body>
 </html>
