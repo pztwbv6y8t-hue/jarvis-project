@@ -177,6 +177,7 @@
 <div class="settings-panel">
   <h3>設定</h3>
   <p>ここに今後、設定項目が追加されます。</p>
+  <button id="clearHistoryButton">会話履歴を削除</button>
 </div>
 
 <script type="module">
@@ -325,6 +326,15 @@
   // 起動時の処理
   loadChatHistory(); // 保存された会話を読み込む
   loadAI();
+
+  const clearHistoryButton = document.getElementById('clearHistoryButton');
+clearHistoryButton.addEventListener('click', function() {
+  const confirmed = confirm('会話履歴を本当に削除しますか?');
+  if (confirmed) {
+    localStorage.removeItem('jarvis_chat');
+    chatBox.innerHTML = '';
+  }
+});
 </script>
 
 </body>
