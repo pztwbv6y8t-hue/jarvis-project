@@ -180,36 +180,71 @@
 <script>
   const talkButton = document.querySelector('.talk-button');
   const chatBox = document.querySelector('.chat-box');
+  const circle = document.querySelector('.circle');
 
-  // 読み上げ機能(すでにある部分)
   function speak(text) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'ja-JP';
     speechSynthesis.speak(utterance);
   }
 
-  // 音声認識の準備
   const recognition = new webkitSpeechRecognition();
   recognition.lang = 'ja-JP';
   recognition.continuous = false;
   recognition.interimResults = false;
 
-  // TALKボタンを押したら、認識を開始する
+  let audioContext, analyser, dataArray, animationId;
+
+  function startVisualizer(stream) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioContext.createAnalyser();
+    const micSource = audioContext.createMediaStreamSource(stream);
+    micSource.connect(analyser);
+    analyser.fftSize = 256;
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+    circle.style.animation = 'none';
+    updateVisualizer();
+  }
+
+  function updateVisualizer() {
+    analyser.getByteFrequencyData(dataArray);
+    let sum = 0;
+    for (let i = 0; i < dataArray.length; i++) {
+      sum += dataArray[i];
+    }
+    const average = sum / dataArray.length;
+    const scale = 1 + (average / 100);
+    circle.style.transform = 'scale(' + scale + ')';
+    animationId = requestAnimationFrame(updateVisualizer);
+  }
+
+  function stopVisualizer() {
+    if (animationId) cancelAnimationFrame(animationId);
+    circle.style.transform = '';
+    circle.style.animation = 'pulse 2s infinite ease-in-out';
+    if (audioContext) audioContext.close();
+  }
+
   talkButton.addEventListener('click', function() {
     recognition.start();
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+      startVisualizer(stream);
+    });
   });
 
-  // 話した内容が認識できたときの処理
   recognition.addEventListener('result', function(event) {
     const spokenText = event.results[0][0].transcript;
-
     const userMessage = document.createElement('div');
     userMessage.className = 'message user';
     userMessage.textContent = spokenText;
     chatBox.appendChild(userMessage);
   });
-</script>
 
+  recognition.addEventListener('end', function() {
+    stopVisualizer();
+  });
+</script>
 
 
 </body>
