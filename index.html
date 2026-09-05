@@ -59,6 +59,29 @@
   justify-content: center;
   gap: 8px;
 }
+.chat-box {
+  max-width: 400px;
+  margin: 40px auto 0;
+  text-align: left;
+}
+.message {
+  padding: 10px 16px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  font-size: 15px;
+  max-width: 75%;
+  line-height: 1.4;
+}
+.message.jarvis {
+  background-color: #1a1a1a;
+  border: 1px solid #444;
+  color: #ffffff;
+}
+.message.user {
+  background-color: #ffffff;
+  color: #000000;
+  margin-left: auto;
+}
 
 
 </style>
@@ -77,6 +100,10 @@
   TALK
 </button>
 
-
+<div class="chat-box">
+  <div class="message jarvis">おかえりなさい、HAL。何かお手伝いしましょうか?</div>
+  <div class="message user">今日の予定を教えて</div>
+  <div class="message jarvis">まだ予定を確認する機能は準備中です。</div>
+</div>
 </body>
 </html>
