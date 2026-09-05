@@ -181,11 +181,13 @@
   const talkButton = document.querySelector('.talk-button');
 
   talkButton.addEventListener('click', function() {
-    const utterance = new SpeechSynthesisUtterance('おかえりなさい、HAL。何かお手伝いしましょうか?');
-    utterance.lang = 'ja-JP';
-    speechSynthesis.speak(utterance);
+    const voices = speechSynthesis.getVoices();
+    let voiceList = '';
+    voices.forEach(function(voice, index) {
+      if (voice.lang.startsWith('ja')) {
+        voiceList += index + ': ' + voice.name + '\n';
+      }
+    });
+    alert(voiceList);
   });
 </script>
-
-</body>
-</html>
