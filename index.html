@@ -232,8 +232,7 @@
       startVisualizer(stream);
     });
   });
-
-  recognition.addEventListener('result', function(event) {
+    recognition.addEventListener('result', function(event) {
     const spokenText = event.results[0][0].transcript;
     const userMessage = document.createElement('div');
     userMessage.className = 'message user';
@@ -241,6 +240,7 @@
     chatBox.appendChild(userMessage);
     askAI(spokenText);
   });
+
 </script>
 
 <script type="module">
