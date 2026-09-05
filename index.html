@@ -111,11 +111,42 @@
     visibility: hidden;
   }
 }
+#settingsToggle {
+  display: none;
+}
+.settings-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  font-size: 24px;
+  z-index: 1000;
+}
+.settings-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 250px;
+  height: 100%;
+  background-color: #111111;
+  border-left: 1px solid #444;
+  padding: 20px;
+  color: #ffffff;
+  text-align: left;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 998;
+}
+#settingsToggle:checked ~ .settings-panel {
+  transform: translateX(0);
+}
 
 
 </style>
 </head>
 <body>
+  <input type="checkbox" id="settingsToggle">
+<label for="settingsToggle" class="settings-button">⚙️</label>
+
   <div class="boot-screen">SYSTEM BOOTING...</div>
 
  <h1>J.A.R.V.I.S.</h1>
@@ -136,5 +167,10 @@
   <div class="message user">今日の予定を教えて</div>
   <div class="message jarvis">まだ予定を確認する機能は準備中です。</div>
 </div>
+<div class="settings-panel">
+  <h3>設定</h3>
+  <p>ここに今後、設定項目が追加されます。</p>
+</div>
+
 </body>
 </html>
