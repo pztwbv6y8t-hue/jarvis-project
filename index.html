@@ -285,7 +285,8 @@
       jarvisMessage.className = 'message jarvis';
       jarvisMessage.textContent = replyText;
       chatBox.appendChild(jarvisMessage);
-      
+      chatBox.scrollTop = chatBox.scrollHeight;
+
       
       saveChatHistory(); // JARVISの返答後に記憶を保存
       speak(replyText);
