@@ -362,7 +362,7 @@
     recognition.start();
     navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
       startVisualizer(stream);
-    });
+  });
   });
 
   recognition.addEventListener('result', function(event) {
