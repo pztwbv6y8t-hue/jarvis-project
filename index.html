@@ -244,51 +244,128 @@
 </script>
 
 <script type="module">
-  import { CreateMLCEngine } from "https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm/+esm";
+  import { CreateMLCEngine } from "https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.46/+esm";
 
+  const talkButton = document.querySelector('.talk-button');
+  const chatBox = document.querySelector('.chat-box');
+  const circle = document.querySelector('.circle');
   const statusText = document.querySelector('p');
-  const chatBox2 = document.querySelector('.chat-box');
-  let engine;
 
+  let engine;
   const systemPrompt = "あなたはJARVISという執事AIです。丁寧に、簡潔に答えてください。";
 
-  async function loadAI() {
-    statusText.textContent = 'AI読み込み中...';
-
-    engine = await CreateMLCEngine(
-      "Llama-3.2-1B-Instruct-q4f16_1-MLC",
-      {
-        initProgressCallback: (progress) => {
-          statusText.textContent = 'AI読み込み中... ' + Math.floor(progress.progress * 100) + '%';
-        }
-      }
-    );
-
-    statusText.textContent = 'SYSTEM READY';
+  // 音声読み上げ関数
+  function speak(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ja-JP';
+    speechSynthesis.speak(utterance);
   }
 
-  async function askAI(userText) {
-    statusText.textContent = '考え中...';
+  // 音声認識の設定
+  const recognition = new webkitSpeechRecognition();
+  recognition.lang = 'ja-JP';
+  recognition.continuous = false;
+  recognition.interimResults = false;
 
+  // ビジュアライザー（声の大きさに応じたアニメーション）
+  let audioContext, analyser, dataArray, animationId;
+
+  function startVisualizer(stream) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioContext.createAnalyser();
+    const micSource = audioContext.createMediaStreamSource(stream);
+    micSource.connect(analyser);
+    analyser.fftSize = 256;
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
+    circle.style.animation = 'none';
+    updateVisualizer();
+  }
+
+  function updateVisualizer() {
+    analyser.getByteFrequencyData(dataArray);
+    let sum = 0;
+    for (let i = 0; i < dataArray.length; i++) {
+      sum += dataArray[i];
+    }
+    const average = sum / dataArray.length;
+    const scale = 1 + (average / 100);
+    circle.style.transform = 'scale(' + scale + ')';
+    animationId = requestAnimationFrame(updateVisualizer);
+  }
+
+  function stopVisualizer() {
+    if (animationId) cancelAnimationFrame(animationId);
+    circle.style.transform = '';
+    circle.style.animation = 'pulse 2s infinite ease-in-out';
+    if (audioContext) audioContext.close();
+  }
+
+  // AIモデルの読み込み・初期化
+  async function loadAI() {
+    statusText.textContent = 'AI読み込み中...';
+    try {
+      engine = await CreateMLCEngine(
+        "Llama-3.2-1B-Instruct-q4f16_1-MLC",
+        {
+          initProgressCallback: (progress) => {
+            statusText.textContent = `AI読み込み中... ${Math.floor(progress.progress * 100)}%`;
+          }
+        }
+      );
+      statusText.textContent = 'SYSTEM READY';
+    } catch (e) {
+      statusText.textContent = 'AI読み込みエラー';
+      console.error(e);
+    }
+  }
+
+  // AIへの質問処理
+  async function askAI(userText) {
+    if (!engine) {
+      alert("AIの読み込みが完了していません。少々お待ちください。");
+      return;
+    }
+    statusText.textContent = '考え中...';
     const response = await engine.chat.completions.create({
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userText }
       ]
     });
-
     const replyText = response.choices[0].message.content;
-
+    
     const jarvisMessage = document.createElement('div');
     jarvisMessage.className = 'message jarvis';
     jarvisMessage.textContent = replyText;
-    chatBox2.appendChild(jarvisMessage);
-
+    chatBox.appendChild(jarvisMessage);
+    
     speak(replyText);
     statusText.textContent = 'SYSTEM READY';
   }
 
-  window.askAI = askAI;
+  // イベント設定
+  talkButton.addEventListener('click', function() {
+    recognition.start();
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+      startVisualizer(stream);
+    });
+  });
+
+  recognition.addEventListener('result', function(event) {
+    const spokenText = event.results[0][0].transcript;
+    const userMessage = document.createElement('div');
+    userMessage.className = 'message user';
+    userMessage.textContent = spokenText;
+    chatBox.appendChild(userMessage);
+    
+    askAI(spokenText);
+  });
+
+  recognition.addEventListener('end', function() {
+    stopVisualizer();
+  });
+
+  // 起動時にAIを読み込む
   loadAI();
 </script>
 
